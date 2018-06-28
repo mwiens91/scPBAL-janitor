@@ -8,16 +8,27 @@ import re
 import yaml
 
 
+# Program info
 NAME = 'scPBAL janitor'
 DESCRIPTION = 'moves and renames scPBAL data directories to a common directory'
 VERSION = '0.0.0'
+
+# Relative path to config file
 CONFIG_PATH = 'config.yaml'
+
+# Logging stuff
 LOGLEVEL_CHOICES = ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG']
 LOGLEVEL_DICT = {'CRITICAL': logging.CRITICAL,
                  'ERROR': logging.ERROR,
                  'WARNING': logging.WARNING,
                  'INFO': logging.INFO,
                  'DEBUG': logging.DEBUG,}
+
+# Regex to match features of a directory name: this is based on the
+# directory names I've encountered so far, so it's as complicated and
+# exhausted as it needs to be, but not more than that.
+ID_REGEX = r'(?:^|[-_])(px\d{4,})(?:$|[-_])'
+DATE_REGEX = r'(?:^|[-_])(\d{8})(?:$|[-_])'
 
 
 def parse_runtime_arguments():
@@ -59,7 +70,27 @@ def parse_directory_name(directory_name):
         are strings (in the case of no appropriate value for a key, an
         empty string will be used instead of None).
     """
-    return dict()
+    name_feature_dict = {'id': '', 'date': '', 'extra': ''}
+
+    # Find the ID and date
+    try:
+        id_ = re.search(ID_REGEX, directory_name, flags=re.I).group(1)
+        name_feature_dict['id'] = id_
+    except AttributeError:
+        pass
+
+    try:
+        date = re.search(DATE_REGEX, directory_name, flags=re.I).group(1)
+        name_feature_dict['date'] = date
+    except AttributeError:
+        pass
+
+    # Put the remaining stuff in extra, stripping away any outlying
+    # useless characters
+    extra = directory_name.replace(id_, '').replace(date, '').strip(r'_-')
+    name_feature_dict['extra'] = extra
+
+    return name_feature_dict
 
 
 def move_directory(source_path, destination_path):
