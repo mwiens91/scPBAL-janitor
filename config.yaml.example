@@ -1,0 +1,5 @@
+# Copy this config.yaml.example to config.yaml and fill out the
+# variables!
+---
+home_scpbal_directory: /path/to/directory/here/
+...
