@@ -19,7 +19,7 @@ into a common directory, renaming them to a common format, making use of
 provided those are available to manipulate (though a directory without a
 recognized ID will be ignored).
 
-There's also an option to enforce a new or existing naming format on the
+There's also an option (or there will be eventually) to enforce a new or existing naming format on the
 common directory.
 
 ## Fun facts!

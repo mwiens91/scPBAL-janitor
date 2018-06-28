@@ -3,13 +3,21 @@
 from __future__ import print_function
 import argparse
 import logging
-import os
+import os.path
 import re
-import sys
+import yaml
 
 
-# Relative path to the config file
+NAME = 'scPBAL janitor'
+DESCRIPTION = 'moves and renames scPBAL data directories to a common directory'
+VERSION = '0.0.0'
 CONFIG_PATH = 'config.yaml'
+LOGLEVEL_CHOICES = ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG']
+LOGLEVEL_DICT = {'CRITICAL': logging.CRITICAL,
+                 'ERROR': logging.ERROR,
+                 'WARNING': logging.WARNING,
+                 'INFO': logging.INFO,
+                 'DEBUG': logging.DEBUG,}
 
 
 def parse_runtime_arguments():
@@ -20,7 +28,24 @@ def parse_runtime_arguments():
         arguments as attributes. See argparse documentation for more
         details.
     """
-    pass
+    parser = argparse.ArgumentParser(
+        prog=NAME,
+        description="%(prog)s - " + DESCRIPTION,)
+    parser.add_argument(
+        "directories",
+        nargs='*',
+        help="The directories to process and move",)
+    parser.add_argument(
+        "--loglevel",
+        default="INFO",
+        choices=LOGLEVEL_CHOICES,
+        help="The logging loglevel",)
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="%(prog)s " + VERSION,)
+
+    return parser.parse_args()
 
 
 def parse_directory_name(directory_name):
@@ -34,7 +59,7 @@ def parse_directory_name(directory_name):
         are strings (in the case of no appropriate value for a key, an
         empty string will be used instead of None).
     """
-    pass
+    return dict()
 
 
 def move_directory(source_path, destination_path):
@@ -51,8 +76,46 @@ def move_directory(source_path, destination_path):
 
 def main():
     """Main function for scPBAL janitor."""
-    pass
+    # Parse runtime args
+    args = parse_runtime_arguments()
+
+    # Set up the logger
+    logging.basicConfig(format='%(levelname)s:%(message)s',
+                        level=LOGLEVEL_DICT[args.loglevel])
+
+    # Parse YAML config file in the same directory as this script
+    logging.debug("loading YAML config file %s", CONFIG_PATH)
+
+    script_directory_path = os.path.dirname(os.path.abspath(__file__))
+    config_file_path = os.path.join(script_directory_path, CONFIG_PATH)
+
+    with open(config_file_path, 'r') as yamlfile:
+        config = yaml.load(yamlfile)
+
+    # Process each directory passed in
+    for path in args.directories:
+        logging.debug("processing %s", path)
+
+        # Validate that the path is in fact a directory
+        logging.debug("validating that %s is a directory", path)
+
+        if not os.path.isdir(path):
+            # Not a directory. Move on to next directory.
+            logging.error("%s is not a directory!", path)
+            continue
+
+        # Process the directory name
+        old_directory_name = os.path.basename(path.rstrip('/'))
+
+        logging.debug("parsing name %s", old_directory_name)
+        name_features = parse_directory_name(old_directory_name)
+
+        # Form the new path of the directory
+
+        # Move the directory
+        #logging.debug("moving %s to %s", path
 
 
 if __name__ == '__main__':
+    # Run the script
     main()
