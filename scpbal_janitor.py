@@ -45,18 +45,39 @@ def parse_runtime_arguments():
     parser.add_argument(
         "directories",
         nargs='*',
-        help="The directories to process and move",)
+        help="the directories to process and move",)
+    parser.add_argument(
+        "--directories-files",
+        nargs='*',
+        default=[],
+        help="files containing directory paths to read from",)
     parser.add_argument(
         "--loglevel",
         default="INFO",
         choices=LOGLEVEL_CHOICES,
-        help="The logging loglevel",)
+        help="the logging loglevel",)
     parser.add_argument(
         "--version",
         action="version",
         version="%(prog)s " + VERSION,)
 
     return parser.parse_args()
+
+
+def read_lines_from_file(file_path):
+    """Reads lines from a file, skipping lines that start with #.
+
+    Arg:
+        file_path: A string containing the path of the file to read.
+    Returns:
+        A list of strings containing the lines from the file, except the
+        lines that start with '#'.
+    """
+    with open(file_path) as f:
+        stripped_lines = [line.strip() for line in f]
+
+    return [line for line in stripped_lines
+            if len(line) and not line.startswith('#')]
 
 
 def parse_directory_name(directory_name):
@@ -122,6 +143,15 @@ def main():
 
     with open(config_file_path, 'r') as yamlfile:
         config = yaml.load(yamlfile)
+
+    # Get a list of directories to process
+    logging.debug("collecting directories to process")
+
+    directory_paths = args.directories
+
+    for directories_file in args.directories_files:
+        logging.debug("collecting directories from file %s", directories_file)
+        directory_paths += read_lines_from_file(directories_file)
 
     # Process each directory passed in
     for path in args.directories:
