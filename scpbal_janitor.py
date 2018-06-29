@@ -3,7 +3,6 @@
 
 from __future__ import print_function
 import argparse
-import distutils
 import logging
 import os.path
 import re
@@ -143,9 +142,8 @@ def import_directory(source_path, destination_path, move=False):
         # Move the directory
         shutil.move(source_path, destination_path)
     else:
-        # Copy the directory - this is apparently better than the
-        # copy_tree in the shutil library.
-        distutils.dir_util.copy_tree(source_path, destination_path)
+        # Copy the directory
+        shutil.copytree(source_path, destination_path)
 
 
 def main():
