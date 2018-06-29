@@ -172,6 +172,11 @@ def main():
         logging.debug("parsing name %s", old_directory_name)
         name_features = parse_directory_name(old_directory_name)
 
+        if not name_features['id']:
+            logging.error("failed to parse ID from directory %s",
+                          old_directory_name)
+            continue
+
         # Form the new path of the directory
 
         # Move the directory
