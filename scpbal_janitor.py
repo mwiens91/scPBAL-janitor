@@ -1,7 +1,9 @@
 #!/usr/bin/env python
+"""Main (and only) script for scPBAL janitor."""
 
 from __future__ import print_function
 import argparse
+import distutils
 import logging
 import os.path
 import re
@@ -12,7 +14,7 @@ import yaml
 
 # Program info
 NAME = 'scPBAL janitor'
-DESCRIPTION = 'moves and renames scPBAL data directories to a common directory'
+DESCRIPTION = 'imports and renames scPBAL data directories to a common directory'
 VERSION = '0.0.0'
 
 # Relative path to config file
@@ -47,7 +49,7 @@ def parse_runtime_arguments():
     parser.add_argument(
         "directories",
         nargs='*',
-        help="the directories to process and move",)
+        help="the directories to process and import",)
     parser.add_argument(
         "--directories-files",
         nargs='*',
@@ -59,9 +61,13 @@ def parse_runtime_arguments():
         choices=LOGLEVEL_CHOICES,
         help="the logging loglevel",)
     parser.add_argument(
+        "--move",
+        action="store_true",
+        help="move directories instead of copying")
+    parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="run the script but don't move any files")
+        help="run the script but don't import any files")
     parser.add_argument(
         "--version",
         action="version",
@@ -121,16 +127,25 @@ def parse_directory_name(directory_name):
     return name_feature_dict
 
 
-def move_directory(source_path, destination_path):
-    """Moves a directory.
+def import_directory(source_path, destination_path, move=False):
+    """Import a directory.
+
+    By default this copies, but will move if specified by a flag passed
+    in.
 
     Args:
         source_path: A string containing the path to the directory to
-            move.
-        destination_path: A string containing the path of where to move
-            the above directory.
+            import.
+        destination_path: A string containing the path of where to
+            import the above directory.
     """
-    shutil.move(source_path, destination_path)
+    if move:
+        # Move the directory
+        shutil.move(source_path, destination_path)
+    else:
+        # Copy the directory - this is apparently better than the
+        # copy_tree in the shutil library.
+        distutils.dir_util.copy_tree(source_path, destination_path)
 
 
 def main():
@@ -202,16 +217,19 @@ def main():
             logging.critical("aborting now")
             sys.exit(1)
 
-        # Move the directory
-        logging.debug("moving %s to %s", path, new_directory_path)
+        # Import the directory
+        if args.move:
+            logging.debug("moving %s to %s", path, new_directory_path)
+        else:
+            logging.debug("copying %s to %s", path, new_directory_path)
 
         if os.path.exists(new_directory_path):
-            # The path we want to move to already exists!
+            # The path we want to copy to already exists!
             logging.error("%s already exists", new_directory_path)
             continue
 
         if not args.dry_run:
-            move_directory(path, new_directory_path)
+            import_directory(path, new_directory_path, args.move)
 
 
 if __name__ == '__main__':

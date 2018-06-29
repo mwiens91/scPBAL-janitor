@@ -17,7 +17,8 @@ into a common directory, renaming them to a common format, making use of
 + the extra bits (e.g., breastxenografts)
 
 provided those are available to manipulate (though a directory without a
-recognized ID will be ignored).
+recognized ID will be ignored). The default import operation is a copy,
+although a move can be performed if specified.
 
 There's also an option (or there will be eventually) to enforce a new or
 existing naming format on the common directory.
