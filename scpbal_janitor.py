@@ -77,13 +77,13 @@ def parse_directory_name(directory_name):
         id_ = re.search(ID_REGEX, directory_name, flags=re.I).group(1)
         name_feature_dict['id'] = id_
     except AttributeError:
-        pass
+        id_ = ''
 
     try:
         date = re.search(DATE_REGEX, directory_name, flags=re.I).group(1)
         name_feature_dict['date'] = date
     except AttributeError:
-        pass
+        date = ''
 
     # Put the remaining stuff in extra, stripping away any outlying
     # useless characters
