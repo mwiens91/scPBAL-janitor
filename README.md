@@ -12,15 +12,39 @@ px0738
 
 into a common directory, renaming them to a common format, making use of
 
-+ the ID (e.g., px0444)
++ the ID (e.g., PX0443)
 + the date (e.g., 20161107)
-+ the extra bits (e.g., breast_xenografts_s501p10)
++ the extra bits (e.g., breastxenografts)
 
 provided those are available to manipulate (though a directory without a
 recognized ID will be ignored).
 
-There's also an option (or there will be eventually) to enforce a new or existing naming format on the
-common directory.
+There's also an option (or there will be eventually) to enforce a new or
+existing naming format on the common directory.
+
+## Usage
+
+First you need to setup the common directory you want your scPBAL data
+in: copy `config.yaml.example` to `config.yaml` and fill in the
+`home_scpbal_directory` (the scPBAL common directory).
+
+To run the script, specify the directories directly with
+
+```
+./scpbal_janitor /path/to/directory1 /path/to/directory2 ...
+```
+
+or if you have a text file with a bunch of directories you can also run
+
+```
+./scpbal_janitor --directories-files /path/to/text/file
+```
+
+When in doubt, type
+
+```
+./scpbal_janitor --help
+```
 
 ## Fun facts!
 
