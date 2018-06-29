@@ -6,6 +6,7 @@ import logging
 import os.path
 import re
 import yaml
+import sys
 
 
 # Program info
@@ -169,7 +170,7 @@ def main():
         # Process the directory name
         old_directory_name = os.path.basename(path.rstrip('/'))
 
-        logging.debug("parsing name %s", old_directory_name)
+        logging.debug("parsing directory name %s", old_directory_name)
         name_features = parse_directory_name(old_directory_name)
 
         if not name_features['id']:
@@ -177,7 +178,24 @@ def main():
                           old_directory_name)
             continue
 
-        # Form the new path of the directory
+        # Form the new path of the directory, which is, provided the
+        # features exist, {id}_{date}_{extra}
+        new_directory_name = name_features['id']
+
+        if name_features['date']:
+            new_directory_name += '_' + name_features['date']
+
+        if name_features['extra']:
+            new_directory_name += '_' + name_features['extra']
+
+        try:
+            new_directory_path = os.path.join(
+                config['home_scpbal_directory'],
+                new_directory_name,)
+        except KeyError:
+            logging.critical("'home_scpbal_directory' not defined in config")
+            logging.critical("aborting now")
+            sys.exit(1)
 
         # Move the directory
         #logging.debug("moving %s to %s", path
