@@ -5,8 +5,9 @@ import argparse
 import logging
 import os.path
 import re
-import yaml
+import shutil
 import sys
+import yaml
 
 
 # Program info
@@ -57,6 +58,10 @@ def parse_runtime_arguments():
         default="INFO",
         choices=LOGLEVEL_CHOICES,
         help="the logging loglevel",)
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="run the script but don't move any files")
     parser.add_argument(
         "--version",
         action="version",
@@ -125,7 +130,7 @@ def move_directory(source_path, destination_path):
         destination_path: A string containing the path of where to move
             the above directory.
     """
-    pass
+    shutil.move(source_path, destination_path)
 
 
 def main():
@@ -198,7 +203,15 @@ def main():
             sys.exit(1)
 
         # Move the directory
-        #logging.debug("moving %s to %s", path
+        logging.debug("moving %s to %s", path, new_directory_path)
+
+        if os.path.exists(new_directory_path):
+            # The path we want to move to already exists!
+            logging.error("%s already exists", new_directory_path)
+            continue
+
+        if not args.dry_run:
+            move_directory(path, new_directory_path)
 
 
 if __name__ == '__main__':
