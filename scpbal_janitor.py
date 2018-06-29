@@ -96,7 +96,7 @@ def parse_directory_name(directory_name):
     # Find the ID and date
     try:
         id_ = re.search(ID_REGEX, directory_name, flags=re.I).group(1)
-        name_feature_dict['id'] = id_
+        name_feature_dict['id'] = id_.lower()
     except AttributeError:
         id_ = ''
 
@@ -107,8 +107,9 @@ def parse_directory_name(directory_name):
         date = ''
 
     # Put the remaining stuff in extra, stripping away any outlying
-    # useless characters
-    extra = directory_name.replace(id_, '').replace(date, '').strip(r'_-')
+    # useless characters and doubled boundary characters
+    extra = directory_name.replace(id_, '').replace(date, '')
+    extra = extra.strip(r'_-').replace('__', '_').replace('--', '-')
     name_feature_dict['extra'] = extra
 
     return name_feature_dict
