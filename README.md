@@ -26,8 +26,8 @@ existing naming format on the common directory.
 ## Usage
 
 First you need to setup the common directory you want your scPBAL data
-in: copy `config.yaml.example` to `config.yaml` and fill in the
-`home_scpbal_directory` (the scPBAL common directory).
+in: copy [`config.yaml.example`](config.yaml.example) to `config.yaml`
+and fill in the `home_scpbal_directory` (the scPBAL common directory).
 
 To run the script, specify the directories directly with
 
