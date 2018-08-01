@@ -1,3 +1,5 @@
+![Python version](https://img.shields.io/badge/python-2-blue.svg)
+
 # scPBAL janitor
 
 Imports a bunch of directories with names like
