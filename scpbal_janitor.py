@@ -162,7 +162,7 @@ def main():
     config_file_path = os.path.join(script_directory_path, CONFIG_PATH)
 
     with open(config_file_path, 'r') as yamlfile:
-        config = yaml.load(yamlfile)
+        config = yaml.safe_load(yamlfile)
 
     # Get a list of directories to process
     logging.debug("collecting directories to process")
